@@ -1,5 +1,7 @@
 package com.tiooooo.jetheroes
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.tiooooo.jetheroes.model.Hero
@@ -13,6 +15,16 @@ class JetHeroesViewModel(private val repository: HeroRepository) : ViewModel() {
             .groupBy { it.name[0] }
     )
     val groupedHeroes: StateFlow<Map<Char, List<Hero>>> get() = _groupedHeroes
+
+    private val _query = mutableStateOf("")
+    val query: State<String> get() = _query
+
+    fun search(query: String) {
+        _query.value = query
+        _groupedHeroes.value = repository.searchHeroes(query)
+            .sortedBy { it.name }
+            .groupBy { it.name.first() }
+    }
 }
 
 
